@@ -1,0 +1,369 @@
+{
+  "info": {
+    "_postman_id": "banking-api-collection-v2",
+    "name": "Banking API",
+    "description": "Postman collection for the Banking API. Covers Customer and Account management endpoints including deposits, withdrawals, and transaction history.\n\nBase URL: http://localhost:8080\n\nUse the collection variables `baseUrl`, `customerId`, and `accountId` to easily switch environments.\n\n**Notes:**\n- Customer IDs are auto-generated starting from 1.\n- Account IDs are auto-generated starting from 1001.\n- Error responses include `message`, `status`, and `timestamp` fields.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "customerId",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "accountId",
+      "value": "1001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Customers",
+      "description": "Endpoints for managing customers.\n\nCustomer IDs are auto-assigned by the server starting from 1.",
+      "item": [
+        {
+          "name": "Create Customer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"address\": \"123 Main Street, Springfield\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Creates a new customer. The server assigns an auto-generated ID starting from 1.\n\n**Request Body:**\n- `name` (string, required): Full name of the customer.\n- `address` (string, required): Residential address of the customer."
+          },
+          "response": [
+            {
+              "name": "Customer Created - 200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"name\": \"John Doe\",\n  \"address\": \"123 Main Street, Springfield\",\n  \"accounts\": []\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Get All Customers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers"]
+            },
+            "description": "Retrieves a list of all registered customers."
+          },
+          "response": [
+            {
+              "name": "Customers List - 200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "[\n  {\n    \"id\": 1,\n    \"name\": \"John Doe\",\n    \"address\": \"123 Main Street, Springfield\",\n    \"accounts\": []\n  },\n  {\n    \"id\": 2,\n    \"name\": \"Jane Smith\",\n    \"address\": \"456 Oak Avenue, Shelbyville\",\n    \"accounts\": []\n  }\n]",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Get Customer by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/{{customerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers", "{{customerId}}"]
+            },
+            "description": "Retrieves a specific customer by their ID.\n\n**Path Variable:**\n- `customerId`: The unique ID of the customer."
+          },
+          "response": [
+            {
+              "name": "Customer Found - 200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"name\": \"John Doe\",\n  \"address\": \"123 Main Street, Springfield\",\n  \"accounts\": [\n    {\n      \"id\": 1001,\n      \"balance\": 500.0,\n      \"transactions\": []\n    }\n  ]\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "Customer Not Found - 404",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"message\": \"Customer not found with id: 999\",\n  \"status\": 404,\n  \"timestamp\": \"2026-03-17T10:00:00\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Accounts",
+      "description": "Endpoints for managing bank accounts, including deposits, withdrawals, and transaction history.\n\nAccount IDs are auto-assigned by the server starting from 1001.",
+      "item": [
+        {
+          "name": "Create Account",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts?customerId={{customerId}}&balance=500.00",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts"],
+              "query": [
+                {
+                  "key": "customerId",
+                  "value": "{{customerId}}",
+                  "description": "ID of the customer to link this account to (Long, required)"
+                },
+                {
+                  "key": "balance",
+                  "value": "500.00",
+                  "description": "Initial account balance (double, required)"
+                }
+              ]
+            },
+            "description": "Creates a new bank account linked to an existing customer, with an initial balance. Account IDs start from 1001.\n\n**Query Parameters:**\n- `customerId` (Long, required): The ID of the customer who will own this account.\n- `balance` (double, required): The opening balance for the new account."
+          },
+          "response": [
+            {
+              "name": "Account Created - 200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"id\": 1001,\n  \"balance\": 500.0,\n  \"transactions\": []\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "Customer Not Found - 404",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"message\": \"Customer not found\",\n  \"status\": 404,\n  \"timestamp\": \"2026-03-17T10:00:00\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Get Account by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{accountId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "{{accountId}}"]
+            },
+            "description": "Retrieves a bank account by its ID, including current balance and full transaction history.\n\n**Path Variable:**\n- `accountId`: The unique ID of the account (starts from 1001)."
+          },
+          "response": [
+            {
+              "name": "Account Found - 200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"id\": 1001,\n  \"balance\": 1150.0,\n  \"transactions\": [\n    {\n      \"type\": \"DEPOSIT\",\n      \"amount\": 750.0,\n      \"timestamp\": \"2026-03-17T10:30:00\"\n    },\n    {\n      \"type\": \"WITHDRAW\",\n      \"amount\": 100.0,\n      \"timestamp\": \"2026-03-17T11:00:00\"\n    }\n  ]\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "Account Not Found - 404",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"message\": \"Account not found with id: 9999\",\n  \"status\": 404,\n  \"timestamp\": \"2026-03-17T10:00:00\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Deposit",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{accountId}}/deposit?amount=250.00",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "{{accountId}}", "deposit"],
+              "query": [
+                {
+                  "key": "amount",
+                  "value": "250.00",
+                  "description": "Amount to deposit (double, must be > 0)"
+                }
+              ]
+            },
+            "description": "Deposits a specified amount into an account and records a `DEPOSIT` transaction.\n\n**Path Variable:**\n- `accountId`: The unique ID of the account.\n\n**Query Parameter:**\n- `amount` (double, required): The amount to deposit. Must be greater than 0."
+          },
+          "response": [
+            {
+              "name": "Deposit Successful - 200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "text/plain;charset=UTF-8" }
+              ],
+              "body": "Deposit successful",
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "name": "Account Not Found - 404",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"message\": \"Account not found with id: 9999\",\n  \"status\": 404,\n  \"timestamp\": \"2026-03-17T10:00:00\"\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "Invalid Amount - 500 Internal Server Error",
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"message\": \"Amount must be greater than 0\",\n  \"status\": 500,\n  \"timestamp\": \"2026-03-17T10:00:00\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Withdraw",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{accountId}}/withdraw?amount=100.00",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "{{accountId}}", "withdraw"],
+              "query": [
+                {
+                  "key": "amount",
+                  "value": "100.00",
+                  "description": "Amount to withdraw (double, must be > 0 and <= current balance)"
+                }
+              ]
+            },
+            "description": "Withdraws a specified amount from an account and records a `WITHDRAW` transaction.\n\n**Path Variable:**\n- `accountId`: The unique ID of the account.\n\n**Query Parameter:**\n- `amount` (double, required): The amount to withdraw. Must be greater than 0 and must not exceed the current balance."
+          },
+          "response": [
+            {
+              "name": "Withdrawal Successful - 200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "text/plain;charset=UTF-8" }
+              ],
+              "body": "Withdrawal successful",
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "name": "Account Not Found - 404",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"message\": \"Account not found with id: 9999\",\n  \"status\": 404,\n  \"timestamp\": \"2026-03-17T10:00:00\"\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "Insufficient Balance - 500 Internal Server Error",
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"message\": \"Insufficient balance\",\n  \"status\": 500,\n  \"timestamp\": \"2026-03-17T10:00:00\"\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "Invalid Amount - 500 Internal Server Error",
+              "status": "Internal Server Error",
+              "code": 500,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"message\": \"Amount must be greater than 0\",\n  \"status\": 500,\n  \"timestamp\": \"2026-03-17T10:00:00\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Get Transactions",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts/{{accountId}}/transactions",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts", "{{accountId}}", "transactions"]
+            },
+            "description": "Retrieves the full transaction history for a given account. Each transaction has a `type` (`DEPOSIT` or `WITHDRAW`), an `amount`, and a `timestamp`.\n\n**Path Variable:**\n- `accountId`: The unique ID of the account."
+          },
+          "response": [
+            {
+              "name": "Transactions Retrieved - 200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "[\n  {\n    \"type\": \"DEPOSIT\",\n    \"amount\": 500.0,\n    \"timestamp\": \"2026-03-17T09:00:00\"\n  },\n  {\n    \"type\": \"WITHDRAW\",\n    \"amount\": 100.0,\n    \"timestamp\": \"2026-03-17T11:30:00\"\n  }\n]",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "Account Not Found - 404",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"message\": \"Account not found with id: 9999\",\n  \"status\": 404,\n  \"timestamp\": \"2026-03-17T10:00:00\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
