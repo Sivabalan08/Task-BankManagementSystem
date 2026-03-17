@@ -125,6 +125,90 @@
               "_postman_previewlanguage": "json"
             }
           ]
+        },
+        {
+          "name": "Update Customer",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/{{customerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers", "{{customerId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe Updated\",\n  \"address\": \"789 New Street, Springfield\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Updates the name and address of an existing customer.\n\n**Path Variable:**\n- `customerId`: The unique ID of the customer to update.\n\n**Request Body:**\n- `name` (string, required): Updated full name of the customer.\n- `address` (string, required): Updated residential address of the customer."
+          },
+          "response": [
+            {
+              "name": "Customer Updated - 200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"id\": 1,\n  \"name\": \"John Doe Updated\",\n  \"address\": \"789 New Street, Springfield\",\n  \"accounts\": []\n}",
+              "_postman_previewlanguage": "json"
+            },
+            {
+              "name": "Customer Not Found - 404",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"message\": \"Customer not found with id: 999\",\n  \"status\": 404,\n  \"timestamp\": \"2026-03-17T10:00:00\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Delete Customer",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/customers/{{customerId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "customers", "{{customerId}}"]
+            },
+            "description": "Deletes a customer by their ID. If the customer does not exist, a 404 error is returned.\n\n**Path Variable:**\n- `customerId`: The unique ID of the customer to delete."
+          },
+          "response": [
+            {
+              "name": "Customer Deleted - 200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "text/plain;charset=UTF-8" }
+              ],
+              "body": "Customer deleted successfully",
+              "_postman_previewlanguage": "text"
+            },
+            {
+              "name": "Customer Not Found - 404",
+              "status": "Not Found",
+              "code": 404,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "{\n  \"message\": \"Customer not found\",\n  \"status\": 404,\n  \"timestamp\": \"2026-03-17T10:00:00\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
         }
       ]
     },
@@ -175,6 +259,31 @@
                 { "key": "Content-Type", "value": "application/json" }
               ],
               "body": "{\n  \"message\": \"Customer not found\",\n  \"status\": 404,\n  \"timestamp\": \"2026-03-17T10:00:00\"\n}",
+              "_postman_previewlanguage": "json"
+            }
+          ]
+        },
+        {
+          "name": "Get All Accounts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/accounts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "accounts"]
+            },
+            "description": "Retrieves a list of all bank accounts stored in the system."
+          },
+          "response": [
+            {
+              "name": "Accounts List - 200 OK",
+              "status": "OK",
+              "code": 200,
+              "header": [
+                { "key": "Content-Type", "value": "application/json" }
+              ],
+              "body": "[\n  {\n    \"id\": 1001,\n    \"balance\": 500.0,\n    \"transactions\": []\n  },\n  {\n    \"id\": 1002,\n    \"balance\": 1500.0,\n    \"transactions\": []\n  }\n]",
               "_postman_previewlanguage": "json"
             }
           ]
