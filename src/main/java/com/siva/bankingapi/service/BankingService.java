@@ -37,6 +37,31 @@ public class BankingService {
 
         return c;
     }
+    // GET ALL ACCOUNTS
+    public Collection<Account> getAllAccounts(){
+        return accounts.values();
+    }
+
+    // UPDATE CUSTOMER
+    public Customer updateCustomer(Long id, Customer updated){
+
+        Customer existing = getCustomer(id);
+
+        existing.setName(updated.getName());
+        existing.setAddress(updated.getAddress());
+
+        return existing;
+    }
+
+    // DELETE CUSTOMER
+    public void deleteCustomer(Long id){
+
+        Customer c = customers.remove(id);
+
+        if(c == null){
+            throw new CustomerNotFoundException("Customer not found");
+        }
+    }
 
     public Account createAccount(Long customerId, double balance){
 

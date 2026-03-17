@@ -16,18 +16,37 @@ public class CustomerController {
         this.service = service;
     }
 
+    // CREATE
     @PostMapping
     public Customer createCustomer(@RequestBody Customer customer){
         return service.createCustomer(customer);
     }
 
+    // GET ALL
     @GetMapping
     public Collection<Customer> getCustomers(){
         return service.getAllCustomers();
     }
 
+    // GET BY ID
     @GetMapping("/{id}")
     public Customer getCustomer(@PathVariable Long id){
         return service.getCustomer(id);
+    }
+
+    // UPDATE
+    @PutMapping("/{id}")
+    public Customer updateCustomer(@PathVariable Long id,
+                                   @RequestBody Customer updated){
+
+        return service.updateCustomer(id, updated);
+    }
+
+    // DELETE
+    @DeleteMapping("/{id}")
+    public String deleteCustomer(@PathVariable Long id){
+
+        service.deleteCustomer(id);
+        return "Customer deleted successfully";
     }
 }
