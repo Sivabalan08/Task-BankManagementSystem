@@ -10,4 +10,6 @@
 
 ## How to Run
 steps...
-postman collection attach below
+
+##Postman collection attach below
+link:https://github.com/Sivabalan08/BankMangementSystem-Task/blob/main/BankingAPI.postman_collection.json
