@@ -16,36 +16,28 @@ public class CustomerController {
         this.service = service;
     }
 
-    // CREATE
     @PostMapping
-    public Customer createCustomer(@RequestBody Customer customer){
-        return service.createCustomer(customer);
+    public Customer create(@RequestBody Customer c){
+        return service.createCustomer(c);
     }
 
-    // GET ALL
     @GetMapping
-    public Collection<Customer> getCustomers(){
+    public List<Customer> getAll(){
         return service.getAllCustomers();
     }
 
-    // GET BY ID
     @GetMapping("/{id}")
-    public Customer getCustomer(@PathVariable Long id){
+    public Customer get(@PathVariable Long id){
         return service.getCustomer(id);
     }
 
-    // UPDATE
     @PutMapping("/{id}")
-    public Customer updateCustomer(@PathVariable Long id,
-                                   @RequestBody Customer updated){
-
-        return service.updateCustomer(id, updated);
+    public Customer update(@PathVariable Long id, @RequestBody Customer c) {
+        return service.updateCustomer(id, c);
     }
 
-    // DELETE
     @DeleteMapping("/{id}")
-    public String deleteCustomer(@PathVariable Long id){
-
+    public String delete(@PathVariable Long id) {
         service.deleteCustomer(id);
         return "Customer deleted successfully";
     }
