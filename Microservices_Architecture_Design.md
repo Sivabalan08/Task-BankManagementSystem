@@ -1,61 +1,35 @@
-# Bank Management System
+# Bank Management System: Detailed Microservices Architecture Design
 
-## Overview
-This repository contains the Bank Management System, including the newly proposed detailed Microservices Architecture Design.
-
-## Features
-- Create Account
-- Deposit / Withdraw Money
-- Transfer Funds
-- Customer KYC & Onboarding
-
-## Tech Stack
-- Java / Spring Boot
-- PostgreSQL (for Customer & Account)
-- NoSQL / Cassandra (for Transactions)
-- Spring Cloud (Gateway, Eureka, Config)
-- Keycloak (OAuth2 / JWT Auth)
-- Apache Kafka (Message Broker)
-
-## How to Run
-
-1. Clone the repository
-2. Ensure you have Java 17+ and Maven installed
-3. Run `mvn spring-boot:run` to start the application (currently in monolithic state).
-
-## API Documentation (Postman)
-[Download Postman Collection](https://github.com/Sivabalan08/BankMangementSystem-Task/blob/main/BankingAPI.postman_collection.json)
+## 1. Executive Summary
+This document outlines the detailed microservices architecture design for the Bank Management System, migrating from the existing monolithic Spring Boot application. The design decomposes the system into isolated bounded contexts to achieve high availability, independent scalability, and fault tolerance.
 
 ---
 
-## Microservices Architecture Design (Day 6 Task Assignment)
-
-### 1. Executive Summary
-This document outlines the detailed microservices architecture design for the Bank Management System, migrating from the existing monolithic Spring Boot application. The design decomposes the system into isolated bounded contexts to achieve high availability, independent scalability, and fault tolerance.
-
-### 2. Microservices Decomposition Strategy
+## 2. Microservices Decomposition Strategy
 
 We utilize Domain-Driven Design (DDD) to establish the following core domain services.
 
-#### 2.1. Customer Service
+### 2.1. Customer Service
 - **Responsibility:** Manages customer KYC (Know Your Customer) data, user profiles, and onboarding.
 - **Database:** `CustomerDB` (PostgreSQL). We use a relational database to ensure strict schema enforcement for personal data.
 - **Data Entities:** 
   - `Customer` (ID, Name, Email, Address, Phone, KYC_Status, CreatedAt).
 
-#### 2.2. Account Service
+### 2.2. Account Service
 - **Responsibility:** Manages checking/savings accounts, tracks balances, and associates accounts to customers.
 - **Database:** `AccountDB` (PostgreSQL). Ensures ACID properties necessary for financial ledger states.
 - **Data Entities:** 
   - `Account` (AccountID, CustomerID, AccountType, Balance, Status, CreatedAt).
 
-#### 2.3. Transaction Service
+### 2.3. Transaction Service
 - **Responsibility:** Manages the immutable ledger of deposits, withdrawals, and transfers.
 - **Database:** `TransactionDB` (NoSQL - Cassandra / MongoDB). Selected to handle high-throughput append-only transaction logs.
 - **Data Entities:** 
   - `Transaction` (TxID, FromAccountID, ToAccountID, Amount, Type, Timestamp, Status).
 
-### 3. Infrastructure & Supporting Services
+---
+
+## 3. Infrastructure & Supporting Services
 
 To support the distributed nature of the microservices, the following infrastructure layers will be implemented:
 
@@ -66,9 +40,11 @@ To support the distributed nature of the microservices, the following infrastruc
 5. **Message Broker (Apache Kafka)**: Placed at the core of the event-driven architecture to facilitate asynchronous communication between services (e.g., SAGA pattern).
 6. **Distributed Tracing (Zipkin & Sleuth)**: Attaches a unique `traceId` to every request traversing the Gateway to allow end-to-end debugging across microservices.
 
-### 4. API Endpoints Contract
+---
 
-#### Customer Service API
+## 4. API Endpoints Contract
+
+### Customer Service API
 | Method | Endpoint | Description |
 |---|---|---|
 | `POST` | `/api/v1/customers` | Create a new customer profile. |
@@ -76,14 +52,14 @@ To support the distributed nature of the microservices, the following infrastruc
 | `PUT` | `/api/v1/customers/{id}` | Update customer details. |
 | `DELETE` | `/api/v1/customers/{id}` | Deactivate a customer. |
 
-#### Account Service API
+### Account Service API
 | Method | Endpoint | Description |
 |---|---|---|
 | `POST` | `/api/v1/accounts` | Open a new bank account for a given `customerId`. |
 | `GET` | `/api/v1/accounts/{id}` | Get account balance and details. |
 | `GET` | `/api/v1/accounts/customer/{customerId}` | List all accounts belonging to a customer. |
 
-#### Transaction Service API
+### Transaction Service API
 | Method | Endpoint | Description |
 |---|---|---|
 | `POST` | `/api/v1/transactions/deposit` | Initiate a deposit to an account. |
@@ -91,11 +67,13 @@ To support the distributed nature of the microservices, the following infrastruc
 | `POST` | `/api/v1/transactions/transfer` | Move funds between two accounts. |
 | `GET` | `/api/v1/transactions/account/{accountId}` | Get transaction history for an account. |
 
-### 5. Event-Driven Communication & SAGA Pattern
+---
+
+## 5. Event-Driven Communication & SAGA Pattern
 
 Because databases are partitioned per service, we must avoid distributed locks (2PC) and rely on Eventual Consistency using the Choreography SAGA pattern.
 
-#### 5.1. Use Case: Fund Transfer
+### 5.1. Use Case: Fund Transfer
 When a user transfers money from `Account A` to `Account B`:
 1. **Transaction Service** receives the REST `POST /transfer` request. It persists a `PENDING` transaction in `TransactionDB` and emits a Kafka `TransferInitiatedEvent` to the broker.
 2. **Account Service** consumes the event and attempts to deduct funds from `Account A`.
@@ -103,7 +81,9 @@ When a user transfers money from `Account A` to `Account B`:
    - *Failure (e.g., Insufficient Funds):* It rolls back the deduction and emits a `TransferFailedEvent`.
 3. **Transaction Service** listens for the success or failure events and updates the `TransactionDB` record to `COMPLETED` or `FAILED`.
 
-### 6. Architecture Diagrams
+---
+
+## 6. Architecture Diagrams
 
 ```mermaid
 graph TD
@@ -136,7 +116,9 @@ graph TD
 
 *(Note: A highly detailed node architecture visual was additionally provided as `Microservices_Architecture.drawio`)*
 
-### 7. Migration Strategy (Strangler Fig Pattern)
+---
+
+## 7. Migration Strategy (Strangler Fig Pattern)
 
 To safely migrate the existing monolith to this architecture with zero downtime:
 1. **Phase 1 (Proxy Configuration):** Deploy the **API Gateway** in front of the application. All traffic routes transparently to the monolith backend.
@@ -144,7 +126,9 @@ To safely migrate the existing monolith to this architecture with zero downtime:
 3. **Phase 3 (Extract Account Context):** Repeat the step for `Account Service`, linking customer IDs between the monolith and the new service over synchronous REST calls temporarily.
 4. **Phase 4 (Legacy Decommission):** Extract `Transaction Service`. Once successfully shifted, dismantle the old monolithic codebase completely.
 
-### 8. Security Considerations
+---
+
+## 8. Security Considerations
 - **Boundary Security:** The API Gateway acts as the strict entry point. Direct external access to `CustomerSvc` or `AccountSvc` is blocked by VPC routing.
 - **Stateless Authentication:** Every microservice consumes stateless JWT tokens containing embedded permission scopes.
 - **Data Protection:** Database volumes are encrypted via KMS at rest, and all transit between microservices utilizes mTLS (`HTTPS`).

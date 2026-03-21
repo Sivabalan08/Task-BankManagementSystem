@@ -1,0 +1,78 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.0.0 Safari/537.36" version="29.6.4">
+  <diagram id="microservices" name="Architecture">
+    <mxGraphModel dx="1158" dy="624" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="client" parent="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" value="Web/Mobile Client" vertex="1">
+          <mxGeometry height="60" width="160" x="400" y="40" as="geometry" />
+        </mxCell>
+        <mxCell id="gateway" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" value="API Gateway&amp;#10;(Spring Cloud Gateway)" vertex="1">
+          <mxGeometry height="60" width="240" x="360" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="auth" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="Identity &amp;amp; Auth Service&amp;#10;(Keycloak)" vertex="1">
+          <mxGeometry height="60" width="160" x="120" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="registry" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" value="Service Registry&amp;#10;(Eureka/Consul)" vertex="1">
+          <mxGeometry height="60" width="160" x="680" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="customerService" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="Customer Service" vertex="1">
+          <mxGeometry height="60" width="160" x="160" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="accountService" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="Account Service" vertex="1">
+          <mxGeometry height="60" width="160" x="400" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="transactionService" parent="1" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" value="Transaction Service" vertex="1">
+          <mxGeometry height="60" width="160" x="640" y="320" as="geometry" />
+        </mxCell>
+        <mxCell id="customerDb" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f8cecc;strokeColor=#b85450;" value="Customer DB&amp;#10;(PostgreSQL)" vertex="1">
+          <mxGeometry height="80" width="100" x="190" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="accountDb" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f8cecc;strokeColor=#b85450;" value="Account DB&amp;#10;(PostgreSQL)" vertex="1">
+          <mxGeometry height="80" width="100" x="430" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="transactionDb" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f8cecc;strokeColor=#b85450;" value="Transaction DB&amp;#10;(NoSQL)" vertex="1">
+          <mxGeometry height="80" width="100" x="670" y="440" as="geometry" />
+        </mxCell>
+        <mxCell id="broker" parent="1" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fillColor=#fff2cc;strokeColor=#d6b656;" value="Message Broker&amp;#10;(Apache Kafka)" vertex="1">
+          <mxGeometry height="60" width="160" x="400" y="580" as="geometry" />
+        </mxCell>
+        <mxCell id="e1" edge="1" parent="1" source="client" target="gateway">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e2" edge="1" parent="1" source="gateway" target="auth">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e3" edge="1" parent="1" source="gateway" target="registry">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="e4" edge="1" parent="1" source="gateway" target="customerService">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e5" edge="1" parent="1" source="gateway" target="accountService">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e6" edge="1" parent="1" source="gateway" target="transactionService">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e7" edge="1" parent="1" source="customerService" target="customerDb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e8" edge="1" parent="1" source="accountService" target="accountDb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e9" edge="1" parent="1" source="transactionService" target="transactionDb">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e10" edge="1" parent="1" source="accountService" target="broker">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e11" edge="1" parent="1" source="transactionService" target="broker">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
